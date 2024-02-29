@@ -64,17 +64,28 @@ def print_help():
     print(
         'Usage: crypty [option] filename (keyname)\n'
         '   Mandatory arguments:\n'
-        '     -e, --encrypt     encrypts filename to filename.enc, key to filename.key\n'
-        '     -d, --decrypt     decrypts filename to filename.dec using keyname\n'
+        '     -e, --encrypt     encrypts filename to filename.enc, key to '
+        'filename.key\n'
+        '     -d, --decrypt     decrypts filename to filename.dec using '
+        'keyname\n'
     )
  
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) == 1:
         print_help()
+    elif len(sys.argv) == 2:
+        if sys.argv[1] == '-h' or sys.argv[1] == '--help':
+            print_help()
+        else:
+            print("Error: Mandatory argument missing, see 'crypty --help'")
     elif len(sys.argv) == 3:
         if sys.argv[1] == '-e' or sys.argv[1] == '--encrypt':
             encrypt_file(sys.argv[2])
+        else:
+            print("Error: Mandatory argument missing, see 'crypty --help'")
     elif len(sys.argv) == 4:
         if sys.argv[1] == '-d' or sys.argv[1] == '--decrypt':
             decrypt_file(sys.argv[2], sys.argv[3])
+        else:
+            print("Error: Mandatory argument missing, see 'crypty --help'")
 
