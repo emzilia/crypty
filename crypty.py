@@ -37,7 +37,8 @@ def encrypt_file(filename):
         print("Error: Keyfile generation failed, ensure you have write "
               "permission within the current directory")
         sys.exit(1)
-    # Our Fernet object to do the actual encryption
+
+    # The Fernet object to perform the encryption
     fer = Fernet(key)
 
     # Checks if file is a folder, if it is it creates an archive out of it.
@@ -48,6 +49,7 @@ def encrypt_file(filename):
             isarchive = True
         else:
             file = filename
+            isarchive = False
 
         with open(file, 'rb') as filef:
             file = filef.read()
