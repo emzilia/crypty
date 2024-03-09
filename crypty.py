@@ -13,7 +13,7 @@ def create_archive(folder):
             print("Creating zip archive...")
             os.system(f"tar.exe -a -c -f {archivename} {folder}")
             return archivename
-        else:
+        except:
             print("Error: tar program missing or archive creation failed")
             sys.exit(1)
     else:
@@ -37,9 +37,11 @@ def encrypt_file(filename):
         print("Error: Keyfile generation failed, ensure you have write "
               "permission within the current directory")
         sys.exit(1)
-
+    # Our Fernet object to do the actual encryption
     fer = Fernet(key)
 
+    # Checks if file is a folder, if it is it creates an archive out of it.
+    # Either way, the file gets read or it throws an error
     try:
         if os.path.isdir(filename):
             file = create_archive(filename)
@@ -53,6 +55,7 @@ def encrypt_file(filename):
         print("Error: Unable to read file/directory")
         sys.exit(1)
 
+    # Encrypts file and gives it a new name, or throws an error
     try:
         encrypted = fer.encrypt(file)
         if (isarchive): encryptedname = filename + '.tar.enc'
@@ -65,11 +68,13 @@ def encrypt_file(filename):
         print("Error: File encryption failed")
         sys.exit(1)
 
-    # Automatically removes the created tar file. Want to keep it? Make
-    # it yourself then!
+    # Automatically removes the tar/zip file used to create the archive.
+    # Want to keep it? Create it yourself then!
     file_cleanup(filename)
 
 def decrypt_file(filename, keyfile):
+    # Loads the keyfile, if its not a valid serial object it
+    # throws an error
     try:
         with open(keyfile, 'rb') as keyf:
             key = pickle.load(keyf)
@@ -78,8 +83,10 @@ def decrypt_file(filename, keyfile):
         "has been modified")
         sys.exit(1)
 
+    # The Fernet object to perform the decryption
     fer = Fernet(key)
 
+    # Tries to read the encrypted file, throws an error if it can't
     try:
         with open(filename, 'rb') as filef:
                 encrypted = filef.read()
@@ -105,6 +112,8 @@ def decrypt_file(filename, keyfile):
 def print_help():
     print(
         'Usage: crypty [option] filename (keyname)\n'
+        'Encrypts single files with AES-128 encryption.\nTar/zip archives '
+        'are automatically created for directories.\n'
         '   Mandatory arguments:\n'
         '     -e, --encrypt     encrypts filename to filename.enc, key to '
         'filename.key\n'
@@ -115,9 +124,10 @@ def print_help():
 def file_cleanup(filename):
     archivefile = filename + '.tar'
     if os.path.isfile(archivefile):
+        print("Cleaning up archive file...")
         os.remove(archivefile)
- 
-if __name__ == "__main__":
+
+def process_arguments():
     if len(sys.argv) == 1:
         print_help()
     elif len(sys.argv) == 2:
@@ -141,3 +151,5 @@ if __name__ == "__main__":
     elif len(sys.argv) > 4:
         print("Error: Too many arguments, see 'crypty --help'")
 
+if __name__ == "__main__":
+    process_arguments()
