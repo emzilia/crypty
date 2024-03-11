@@ -7,7 +7,7 @@ except ImportError:
     sys.exit(1)
 
 def create_archive(folder):
-    if (sys.platform == "win32"):
+    if is_windows():
         try:
             archivename = folder + '.zip'
             print("Creating zip archive...")
@@ -60,7 +60,11 @@ def encrypt_file(filename):
     # Encrypts file and gives it a new name, or throws an error
     try:
         encrypted = fer.encrypt(file)
-        if (isarchive): encryptedname = filename + '.tar.enc'
+        if (isarchive): 
+            if is_windows():
+                encryptedname = filename + '.zip.enc'
+            else:
+                encryptedname = filename + '.tar.enc'
         else: encryptedname = filename + '.enc'
         print("File encryption in progress...")
         with open(encryptedname, 'wb') as cryptf:
@@ -124,10 +128,20 @@ def print_help():
     )
 
 def file_cleanup(filename):
-    archivefile = filename + '.tar'
-    if os.path.isfile(archivefile):
-        print("Cleaning up archive file...")
-        os.remove(archivefile)
+    if is_windows():
+        archivefile = filename + '.zip'
+        if os.path.isfile(archivefile):
+            print("Cleaning up archive file...")
+            os.remove(archivefile)
+    else:
+        archivefile = filename + '.tar'
+        if os.path.isfile(archivefile):
+            print("Cleaning up archive file...")
+            os.remove(archivefile)
+
+def is_windows():
+    if (sys.platform) == 'win32':
+        return True
 
 def process_arguments():
     if len(sys.argv) == 1:
