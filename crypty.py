@@ -1,10 +1,26 @@
 #!/usr/bin/env python3
-import pickle, sys, os
+import pickle, sys, os, base64 
+from getpass import getpass
 try:
     from cryptography.fernet import Fernet
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 except ImportError:
     print("Error: Required pip package missing: cryptography")
     sys.exit(1)
+
+def generate_passkey(salt):
+    password = getpass("Enter the encrypted file's password: ")
+    if (salt == 0):
+        salt = os.urandom(16)
+    kdf = PBKDF2HMAC(
+        algorithm = hashes.SHA256(),
+        length = 32,
+        salt = salt,
+        iterations = 480000,
+    )
+    key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+    return key, salt
 
 def create_archive(folder):
     if is_windows():
@@ -26,7 +42,7 @@ def create_archive(folder):
             print("Error: tar package missing or archive creation failed")
             sys.exit(1)
 
-def encrypt_file(filename):
+def encrypt_filekey(filename):
     # Generates a key and dumps it to 'filename.key', otherwise throws an error 
     try:
        key = Fernet.generate_key()
@@ -78,7 +94,57 @@ def encrypt_file(filename):
     # Want to keep it? Create it yourself then!
     file_cleanup(filename)
 
-def decrypt_file(filename, keyfile):
+def encrypt_filepass(filename):
+    # Generates a key and dumps it to 'filename.key', otherwise throws an error 
+    try:
+        salt = 0
+        key, salt = generate_passkey(salt)
+    except:
+        print("Error: Key generation failed, check yoru inputs or sometihn")
+        sys.exit(1)
+
+    # The Fernet object to perform the encryption
+    fer = Fernet(key)
+
+    # Checks if file is a folder, if it is it creates an archive out of it.
+    # Either way, the file gets read or it throws an error
+    try:
+        if os.path.isdir(filename):
+            file = create_archive(filename)
+            isarchive = True
+        else:
+            file = filename
+            isarchive = False
+
+        with open(file, 'rb') as filef:
+            file = filef.read()
+    except:
+        print("Error: Unable to read file/directory")
+        sys.exit(1)
+
+    # Encrypts file and gives it a new name, or throws an error
+    try:
+        encrypted = fer.encrypt(file)
+        if (isarchive): 
+            if is_windows():
+                encryptedname = filename + '.zip.enc'
+            else:
+                encryptedname = filename + '.tar.enc'
+        else: encryptedname = filename + '.enc'
+        print("File encryption in progress...")
+        with open(encryptedname, 'wb') as cryptf:
+            cryptf.write(encrypted + os.urandom(8) + salt + os.urandom(8))
+        print(f"File encryption success: output -> {encryptedname}")
+    except:
+        print("Error: File encryption failed")
+        sys.exit(1)
+
+    # Automatically removes the tar/zip file used to create the archive.
+    # Want to keep it? Create it yourself then!
+    file_cleanup(filename)
+
+
+def decrypt_filekey(filename, keyfile):
     # Loads the keyfile, if its not a valid serial object it
     # throws an error
     try:
@@ -115,16 +181,58 @@ def decrypt_file(filename, keyfile):
               "correct keyfile")
         sys.exit(1)
 
+def decrypt_filepass(filename):
+    # Tries to read the encrypted file, throws an error if it can't
+    try:
+        with open(filename, 'rb') as filef:
+                encrypted = filef.read()
+        salt = encrypted[-24:-8]
+    except:
+        print("Error: Unable to read encrypted file, it might be corrupted")
+        sys.exit(1)
+
+    try:
+        key, salt = generate_passkey(salt)
+    except:
+        print("Error: Unable to load keyfile, either not a key or the file"
+        "has been modified")
+        sys.exit(1)
+
+    # The Fernet object to perform the decryption
+    fer = Fernet(key)
+
+    try:
+        decrypted = fer.decrypt(encrypted[:-32])
+        if filename[-4:] == '.enc':
+            decryptedname = filename[:-4]+ '.dec'
+        else:
+            decryptedname = filename + '.dec'
+        print("File decryption in progress...")
+        with open(decryptedname, 'w') as decryptf:
+            decryptf.write(decrypted.decode('utf-8'))
+        print(f"File decryption success: output -> {decryptedname}")
+    except:
+        print("Error: File decryption failed, check your password.")
+        sys.exit(1)
+
+
 def print_help():
     print(
         'Usage: crypty [option] filename (keyname)\n'
         'Encrypts single files with AES-128 encryption.\nTar/zip archives '
         'are automatically created for directories.\n'
+        'Defaults to password-based encryption. To use a keyfile instead, '
+        'use -ek/-dk.'
         '   Mandatory arguments:\n'
         '     -e, --encrypt     encrypts filename to filename.enc, key to '
         'filename.key\n'
         '     -d, --decrypt     decrypts filename to filename.dec using '
         'keyname\n'
+        '     -ek, --encrypt     encrypts filename to filename.enc, key to '
+        'filename.key\n'
+        '     -dk, --decrypt     decrypts filename to filename.dec using '
+        'keyname\n'
+
     )
 
 def file_cleanup(filename):
@@ -153,12 +261,16 @@ def process_arguments():
             print("Error: Mandatory argument missing, see 'crypty --help'")
     elif len(sys.argv) == 3:
         if sys.argv[1] == '-e' or sys.argv[1] == '--encrypt':
-            encrypt_file(sys.argv[2])
+            encrypt_filepass(sys.argv[2])
+        elif sys.argv[1] == '-ek' or sys.argv[1] == '--encryptkey':
+            encrypt_filekey(sys.argv[2])
+        elif sys.argv[1] == '-d' or sys.argv[1] == '--decrypt':
+            decrypt_filepass(sys.argv[2])
         else:
             print("Error: Mandatory argument missing, see 'crypty --help'")
     elif len(sys.argv) == 4:
-        if sys.argv[1] == '-d' or sys.argv[1] == '--decrypt':
-            decrypt_file(sys.argv[2], sys.argv[3])
+        if sys.argv[1] == '-dk' or sys.argv[1] == '--decryptkey':
+            decrypt_filekey(sys.argv[2], sys.argv[3])
         elif sys.argv[1] == '-e' or sys.argv[1] == '--encrypt':
             print("Error: Only single-file encryption is supported,"
                   " consider an archive for multiple files.")
