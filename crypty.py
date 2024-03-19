@@ -95,12 +95,12 @@ def encrypt_filekey(filename):
     file_cleanup(filename)
 
 def encrypt_filepass(filename):
-    # Generates a key and dumps it to 'filename.key', otherwise throws an error 
+    # Generates a key with a random salt using the password provided.
     try:
         salt = 0
         key, salt = generate_passkey(salt)
     except:
-        print("Error: Key generation failed, check yoru inputs or sometihn")
+        print("Error: Key generation failed, check your entered password.")
         sys.exit(1)
 
     # The Fernet object to perform the encryption
@@ -145,8 +145,7 @@ def encrypt_filepass(filename):
 
 
 def decrypt_filekey(filename, keyfile):
-    # Loads the keyfile, if its not a valid serial object it
-    # throws an error
+    # Loads the keyfile, if its not a valid serial object it throws an error
     try:
         with open(keyfile, 'rb') as keyf:
             key = pickle.load(keyf)
@@ -191,11 +190,11 @@ def decrypt_filepass(filename):
         print("Error: Unable to read encrypted file, it might be corrupted")
         sys.exit(1)
 
+    # Slices out the salt from the end of the encrypted file
     try:
         key, salt = generate_passkey(salt)
     except:
-        print("Error: Unable to load keyfile, either not a key or the file"
-        "has been modified")
+        print("Error: Unknown issue when generating key from salt.")
         sys.exit(1)
 
     # The Fernet object to perform the decryption
@@ -212,10 +211,12 @@ def decrypt_filepass(filename):
             decryptf.write(decrypted.decode('utf-8'))
         print(f"File decryption success: output -> {decryptedname}")
     except:
-        print("Error: File decryption failed, check your password.")
+        print("Error: File decryption failed, ensure you're entering the "
+              "correct password.")
         sys.exit(1)
 
 
+# Prints a cute little help readout
 def print_help():
     print(
         'Usage: crypty [option] filename (keyname)\n'
@@ -235,6 +236,7 @@ def print_help():
 
     )
 
+# If you're on Windows, remove the zip file. If not, remove the tar
 def file_cleanup(filename):
     if is_windows():
         archivefile = filename + '.zip'
@@ -247,6 +249,7 @@ def file_cleanup(filename):
             print("Cleaning up archive file...")
             os.remove(archivefile)
 
+# Quick platform check
 def is_windows():
     if (sys.platform) == 'win32':
         return True
