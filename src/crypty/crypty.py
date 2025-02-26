@@ -12,6 +12,8 @@ except ImportError:
 # Generates a key using the provided salt. If no salt is provided, generates
 # a new one.
 class Crypty():
+    is_windows = False
+
     def generate_passkey(self, salt):
         password = getpass("Enter the encrypted file's password: ")
         if (salt == 0):
@@ -27,7 +29,7 @@ class Crypty():
 
     # On Windows, creates a zip archive. If not, creates a tar archive
     def create_archive(self, folder):
-        if self.is_windows():
+        if self.is_windows:
             try:
                 archivename = folder + '.zip'
                 print("Creating zip archive...")
@@ -81,7 +83,7 @@ class Crypty():
         try:
             encrypted = fer.encrypt(file)
             if (isarchive): 
-                if self.is_windows():
+                if self.is_windows:
                     encryptedname = filename + '.zip.enc'
                 else:
                     encryptedname = filename + '.tar.enc'
@@ -130,7 +132,7 @@ class Crypty():
         try:
             encrypted = fer.encrypt(file)
             if (isarchive): 
-                if self.is_windows():
+                if self.is_windows:
                     encryptedname = filename + '.zip.enc'
                 else:
                     encryptedname = filename + '.tar.enc'
@@ -242,7 +244,7 @@ class Crypty():
 
     # If you're on Windows, remove the zip file. If not, remove the tar
     def file_cleanup(self, filename):
-        if self.is_windows():
+        if self.is_windows:
             archivefile = filename + '.zip'
             if os.path.isfile(archivefile):
                 print("Cleaning up archive file...")
@@ -254,11 +256,12 @@ class Crypty():
                 os.remove(archivefile)
 
     # Quick platform check
-    def is_windows(self):
+    def check_platform(self):
         if (sys.platform) == 'win32':
-            return True
+            self.is_windows = True
 
     def process_arguments(self):
+        self.check_platform
         if len(sys.argv) == 1:
             self.print_help()
         elif len(sys.argv) == 2:
@@ -286,5 +289,3 @@ class Crypty():
         elif len(sys.argv) > 4:
             print("Error: Too many arguments, see 'crypty --help'")
 
-if __name__ == "__main__":
-    process_arguments()
