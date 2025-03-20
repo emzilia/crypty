@@ -9,6 +9,8 @@ except ImportError:
     print("Error: Required pip package missing: cryptography")
     sys.exit(1)
 
+# Generates a key using the provided salt. If no salt is provided, generates
+# a new one.
 def generate_passkey(salt):
     password = getpass("Enter the encrypted file's password: ")
     if (salt == 0):
@@ -22,6 +24,7 @@ def generate_passkey(salt):
     key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
     return key, salt
 
+# On Windows, creates a zip archive. If not, creates a tar archive
 def create_archive(folder):
     if is_windows():
         try:
