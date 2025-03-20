@@ -1,12 +1,12 @@
 [project]
 name = "crypty"
-version = "0.1.0"
-description = ""
+version = "0.7.0-alpha"
+description = "Encrypts files with the Fernet Python module (AES-128)"
 authors = [
     {name = "emzilia",email = "you@example.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "cryptography (>=42.0.5)"
 ]
