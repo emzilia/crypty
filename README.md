@@ -6,10 +6,9 @@ Requires the cryptography package from pip (```pip install --user cryptography``
 
 ### to install
 #### on Linux   
-Clone the repo   
-```git clone https://github.com/emzilia/crypty```   
+Clone the repo with ```git clone https://github.com/emzilia/crypty```   
 Read the ```install.sh``` file to see what it's doing to your system.   
-Then, run the file with ```sh install.sh```    
+Run the file with ```sh install.sh```    
 The ```install.sh``` can be run a second time to remove the file from your ```$HOME/.local/bin```
   
 #### on Windows   
