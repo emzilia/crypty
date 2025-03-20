@@ -37,8 +37,8 @@ Encrypt a file using the ```-e``` switch and the file name
 crypty -e dog.txt
 ```
 
-Afterwards you'll have the encrypted file (as well as the original) and the key, the key is required to decrypt the file and if it's lost, the encrypted file will be unrecoverable.    
-Decrypt the file using the ```-d``` switch with both the file name and keyfile name.   
+You'll be prompted to create a password for the file. Afterwards you'll have the encrypted file as well as the original. If using key-based encryption, you'll also have a key file which you'll need to decrypt the file and if it's lost, the encrypted file will be unrecoverable (unless...)    
+Decrypt the file using the ```-d``` switch with both the file name and optionally the keyfile name.   
 
 ```
 crypty -d dog.txt.enc dog.txt.key
