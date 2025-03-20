@@ -1,0 +1,20 @@
+[project]
+name = "crypty"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "emzilia",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "cryptography (>=42.0.5)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[project.scripts]
+crypty = "crypty.cli:app.process_arguments"
