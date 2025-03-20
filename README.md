@@ -20,12 +20,15 @@ This copies the files required to run the program into the same directory Window
 
 ### to use
 ```
-Usage: crypty [option] filename (keyname)   
+Usage: crypty [option] filename (keyname)
 Encrypts single files with AES-128 encryption.
 Tar/zip archives are automatically created for directories.
-           Mandatory arguments:   
-             -e, --encrypt     encrypts filename to filename.enc, key to filename.key   
-             -d, --decrypt     decrypts filename to filename.dec using keyname   
+Defaults to password-based encryption. To use a keyfile instead, use -ek/-dk.
+    Mandatory arguments:
+        -e,  --encrypt        encrypts filename to filename.enc with a password
+        -d,  --decrypt        decrypts filename to filename.dec using a password
+        -ek, --encryptkey     encrypts filename to filename.enc, key to filename.key
+        -dk, --decryptkey     decrypts filename to filename.dec using keyname
 ```
 
 Encrypt a file using the ```-e``` switch and the file name
