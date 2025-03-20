@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SCRIPT='crypty'
+SCRIPT='crypty.py'
 SCRIPTPATH="${HOME}/.local/bin/crypty"
 
 # If file exists, remove it, if it doesn't, copy it over.
