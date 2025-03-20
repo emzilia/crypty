@@ -1,23 +1,23 @@
-#!/bin/bash
+#!/bin/sh
 
-SCRIPT='crypty.py'
-SCRIPTPATH="$HOME/.local/bin/crypty"
+SCRIPT='crypty'
+SCRIPTPATH="${HOME}/.local/bin/crypty"
 
 # If file exists, remove it, if it doesn't, copy it over.
-if [ -f "$SCRIPTPATH" ]; then
-	echo "Uninstalling crypty script"
-	rm "$SCRIPTPATH"
-	if [ ! -f "$SCRIPTPATH" ]; then
-		echo "Script successfully uninstalled!"
+if [ -f "${SCRIPTPATH}" ]; then
+	printf "Uninstalling crypty script\n"
+	rm "${SCRIPTPATH}"
+	if [ ! -f "${SCRIPTPATH}" ]; then
+		printf "Script successfully uninstalled!\n"
 	else
-		echo "Error: Uninstallation failed"
+		printf "Error: Uninstallation failed\n"
 	fi
-elif [ ! -f "$SCRIPTPATH" ]; then
-	echo "Installing crypty script"
-	cp "$SCRIPT" "$SCRIPTPATH"
-	if [ -f "$SCRIPTPATH" ]; then
-		echo "Script successfully installed!"
+elif [ ! -f "${SCRIPTPATH}" ]; then
+	printf "Installing crypty script\n"
+	cp "${SCRIPT}" "${SCRIPTPATH}"
+	if [ -f "${SCRIPTPATH}" ]; then
+		printf "Script successfully installed!\n"
 	else
-		echo "Error: installation failed"
+		printf "Error: installation failed\n"
 	fi
 fi
