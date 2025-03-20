@@ -12,9 +12,10 @@ def encrypt_file(filename):
        key = Fernet.generate_key()
        keyname = filename + '.key'
        with open(keyname, 'wb') as keyf:
-            pickle.dump(key, keyf)
+           pickle.dump(key, keyf)
     except:
-        print("Error: Keyfile generation failed")
+        print("Error: Keyfile generation failed, ensure you have write "
+              "permission within the current directory")
         sys.exit(1)
 
     fer = Fernet(key)
@@ -44,7 +45,8 @@ def decrypt_file(filename, keyfile):
         with open(keyfile, 'rb') as keyf:
             key = pickle.load(keyf)
     except:
-        print("Error: Unable to load keyfile")
+        print("Error: Unable to load keyfile, either not a key or the file"
+        "has been modified")
         sys.exit(1)
 
     fer = Fernet(key)
@@ -53,7 +55,7 @@ def decrypt_file(filename, keyfile):
         with open(filename, 'rb') as filef:
                 encrypted = filef.read()
     except:
-        print("Error: Unable to read encrypted file")
+        print("Error: Unable to read encrypted file, it might be corrupted")
         sys.exit(1)
 
     try:
@@ -67,7 +69,8 @@ def decrypt_file(filename, keyfile):
             decryptf.write(decrypted)
         print(f"File decryption success: output -> {decryptedname}")
     except:
-        print("Error: File decryption failed")
+        print("Error: File decryption failed, make sure you're using the "
+              "correct keyfile")
         sys.exit(1)
 
 def print_help():
@@ -96,6 +99,11 @@ if __name__ == "__main__":
     elif len(sys.argv) == 4:
         if sys.argv[1] == '-d' or sys.argv[1] == '--decrypt':
             decrypt_file(sys.argv[2], sys.argv[3])
+        elif sys.argv[1] == '-e' or sys.argv[1] == '--encrypt':
+            print("Error: Only single-file encryption is supported,"
+                  " consider an archive for multiple files.")
         else:
             print("Error: Mandatory argument missing, see 'crypty --help'")
+    elif len(sys.argv) > 4:
+        print("Error: Too many arguments, see 'crypty --help'")
 
