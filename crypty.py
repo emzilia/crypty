@@ -1,10 +1,30 @@
 #!/usr/bin/env python3
-import pickle, sys
+import pickle, sys, os
 try:
     from cryptography.fernet import Fernet
 except ImportError:
     print("Error: Required pip package missing: cryptography")
     sys.exit(1)
+
+def create_archive(folder):
+    if (sys.platform == "win32"):
+        try:
+            archivename = folder + '.zip'
+            print("Creating zip archive...")
+            os.system(f"tar.exe -a -c -f {archivename} {folder}")
+            return archivename
+        else:
+            print("Error: tar program missing or archive creation failed")
+            sys.exit(1)
+    else:
+        try:
+            archivename = folder + '.tar'
+            print("Creating tar archive...")
+            os.system(f"tar -cf {archivename} {folder}") 
+            return archivename
+        except:
+            print("Error: tar package missing or archive creation failed")
+            sys.exit(1)
 
 def encrypt_file(filename):
     # Generates a key and dumps it to 'filename.key', otherwise throws an error 
@@ -21,16 +41,22 @@ def encrypt_file(filename):
     fer = Fernet(key)
 
     try:
-        file = filename
+        if os.path.isdir(filename):
+            file = create_archive(filename)
+            isarchive = True
+        else:
+            file = filename
+
         with open(file, 'rb') as filef:
             file = filef.read()
     except:
-        print("Error: Unable to read file")
+        print("Error: Unable to read file/directory")
         sys.exit(1)
 
     try:
         encrypted = fer.encrypt(file)
-        encryptedname = filename + '.enc'
+        if (isarchive): encryptedname = filename + '.tar.enc'
+        else: encryptedname = filename + '.enc'
         print("File encryption in progress...")
         with open(encryptedname, 'wb') as cryptf:
             cryptf.write(encrypted)
@@ -39,6 +65,9 @@ def encrypt_file(filename):
         print("Error: File encryption failed")
         sys.exit(1)
 
+    # Automatically removes the created tar file. Want to keep it? Make
+    # it yourself then!
+    file_cleanup(filename)
 
 def decrypt_file(filename, keyfile):
     try:
@@ -82,6 +111,11 @@ def print_help():
         '     -d, --decrypt     decrypts filename to filename.dec using '
         'keyname\n'
     )
+
+def file_cleanup(filename):
+    archivefile = filename + '.tar'
+    if os.path.isfile(archivefile):
+        os.remove(archivefile)
  
 if __name__ == "__main__":
     if len(sys.argv) == 1:
