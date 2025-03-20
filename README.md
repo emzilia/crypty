@@ -13,12 +13,14 @@ Usage: crypty [option] filename (keyname)
              -e, --encrypt     encrypts filename to filename.enc, key to filename.key   
              -d, --decrypt     decrypts filename to filename.dec using keyname   
 ```
-   
+
+Encrypt a file using the ```-e``` switch and the filename
+
 ```
 crypty -e dog.txt
 ```
 
-Upon encrypting a file, you'll have the encrypted file (as well as the original) and the key, the key is required to decrypt the file and if it's lost, the file will be unrecoverable.    
+Afterwards you'll have the encrypted file (as well as the original) and the key, the key is required to decrypt the file and if it's lost, the file will be unrecoverable.    
 
 ```
 crypty -d dog.txt.enc dog.txt.key
