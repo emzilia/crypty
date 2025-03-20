@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-from cryptography.fernet import Fernet
 import pickle, sys
+try:
+    from cryptography.fernet import Fernet
+except ImportError:
+    print("Error: Required pip package missing: cryptography")
+    sys.exit(1)
 
 def encrypt_file(filename):
+    # Generates a key and dumps it to 'filename.key', otherwise throws an error 
     try:
        key = Fernet.generate_key()
        keyname = filename + '.key'
@@ -25,11 +30,12 @@ def encrypt_file(filename):
     try:
         encrypted = fer.encrypt(file)
         encryptedname = filename + '.enc'
+        print("File encryption in progress...")
         with open(encryptedname, 'wb') as cryptf:
             cryptf.write(encrypted)
         print(f"File encryption success: output -> {encryptedname}, {keyname}")
     except:
-        print("Error: Encryption failed")
+        print("Error: File encryption failed")
         sys.exit(1)
 
 
@@ -52,12 +58,16 @@ def decrypt_file(filename, keyfile):
 
     try:
         decrypted = fer.decrypt(encrypted)
-        decryptedname = filename[:-4]+ '.dec'
+        if filename[-4:] == '.enc':
+            decryptedname = filename[:-4]+ '.dec'
+        else:
+            decryptedname = filename + '.dec'
+        print("File decryption in progress...")
         with open(decryptedname, 'wb') as decryptf:
             decryptf.write(decrypted)
         print(f"File decryption success: output -> {decryptedname}")
     except:
-        print("Error: Decryption failed")
+        print("Error: File decryption failed")
         sys.exit(1)
 
 def print_help():
