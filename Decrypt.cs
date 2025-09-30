@@ -7,7 +7,7 @@ class Decrypt
 {
 	public static void DecryptKey(string fileName)
 	{
-		string decryptPath = Path.Combine(Directory.GetCurrentDirectory(), fileName.Replace(".enc", ""));
+		string decryptPath = Path.Combine(Directory.GetCurrentDirectory(), fileName.Replace(".enc", ".dec"));
 
 		string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 		byte[] ciphertext = File.ReadAllBytes(filePath);
