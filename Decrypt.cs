@@ -30,8 +30,15 @@ class Decrypt
 		string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 		byte[] ciphertext = File.ReadAllBytes(filePath);
 
-		string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");
-		byte[] key = File.ReadAllBytes(keyPath);
+		byte[] key = new byte[32];
+
+		try {
+			string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");
+			key = File.ReadAllBytes(keyPath);
+		} catch {
+			Console.WriteLine("Error: Ensure the key is located in the same directory");
+			Environment.Exit(1);
+		}
 
 		byte[] nonce = new byte[12];
 		Array.Copy(ciphertext, 0, nonce, 0, 12);
