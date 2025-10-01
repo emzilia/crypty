@@ -26,8 +26,11 @@ class Encrypt
 		string plaintextPath = fileName;
 		string ciphertextPath = fileName + ".enc";
 
-		if (!File.Exists(keypath) {
-			var key = new byte[32];
+		var key = new byte[32];
+
+		if (File.Exists(keyPath)) {
+			key = File.ReadAllBytes(keyPath);
+		} else {
 			RandomNumberGenerator.Fill(key);
 		}
 
