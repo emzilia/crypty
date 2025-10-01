@@ -1,10 +1,25 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System;
 using System.Text;
+using System.Formats.Tar;
+using System.IO.Compression;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 class Encrypt
 {
+	public static string CreateArchive(string fileName)
+	{
+		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+			ZipFile.CreateFromDirectory(fileName, fileName + ".zip");
+			fileName = fileName + ".zip";
+		} else {
+			TarFile.CreateFromDirectory(fileName, fileName + ".tar", false);
+			fileName = fileName + ".tar";
+		}
+		return fileName;
+	}
+
 	public static void EncryptKey(string fileName)
 	{
 		string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");

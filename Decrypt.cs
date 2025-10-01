@@ -1,11 +1,31 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System;
 using System.Text;
+using System.Formats.Tar;
+using System.IO.Compression;
 using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 class Decrypt
 {
-	public static void DecryptKey(string fileName)
+	public static string ExtractArchive(string fileName)
+	{
+		if (fileName.Contains(".zip") || fileName.Contains(".tar")) {
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				ZipFile.ExtractToDirectory(fileName, fileName.Replace(".zip", ""), true);
+				fileName = fileName.Replace(".zip", ""); 
+			} else {
+				string newDir = fileName.Replace(".tar", "");
+				Directory.CreateDirectory(newDir);
+				TarFile.ExtractToDirectory(fileName, Path.Combine(Directory.GetCurrentDirectory(), newDir), true);
+				fileName = fileName.Replace(".tar", "");
+			}
+		}
+		return fileName;
+	}
+
+	public static string DecryptKey(string fileName)
 	{
 		string decryptPath = Path.Combine(Directory.GetCurrentDirectory(), fileName.Replace(".enc", ".dec"));
 
@@ -34,5 +54,8 @@ class Decrypt
 
 			File.WriteAllText(decryptPath, plaintext);
 		}
+		fileName = fileName.Replace (".enc", ".dec");
+
+		return fileName;
 	}
 }
