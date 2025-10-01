@@ -53,5 +53,12 @@ class Encrypt
 		File.WriteAllBytes(ciphertextPath, nonce);
 		File.AppendAllBytes(ciphertextPath, ciphertext);
 		File.AppendAllBytes(ciphertextPath, tag);
+
+		if (File.Exists(ciphertextPath) == true) {
+			if (ciphertextPath.Contains(".zip") || ciphertextPath.Contains (".tar")) {
+				if (File.Exists(plaintextPath)) File.Delete(plaintextPath);
+			}
+		}
+		Environment.Exit(0);
 	}
 }
