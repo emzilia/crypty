@@ -1,5 +1,5 @@
 # crypty
-Encrypt files on the command line using AES-GCM.
+Encrypt files on the command line using AES-GCM. Automatically creates zip/tar archives (based on platform) for directories.
 
 ### to use
 ```
