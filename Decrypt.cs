@@ -14,13 +14,12 @@ class Decrypt
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
 				ZipFile.ExtractToDirectory(fileName, fileName.Replace(".zip", ""), true);
-				fileName = fileName.Replace(".zip", ""); 
 			} else {
 				string newDir = fileName.Replace(".tar", "");
 				Directory.CreateDirectory(newDir);
 				TarFile.ExtractToDirectory(fileName, Path.Combine(Directory.GetCurrentDirectory(), newDir), true);
-				fileName = fileName.Replace(".tar", "");
 			}
+			if (File.Exists(fileName)) File.Delete(fileName);
 		}
 	}
 
