@@ -26,8 +26,11 @@ class Encrypt
 		string plaintextPath = fileName;
 		string ciphertextPath = fileName + ".enc";
 
-		var key = new byte[32];
-		RandomNumberGenerator.Fill(key);
+		if (!File.Exists(keypath) {
+			var key = new byte[32];
+			RandomNumberGenerator.Fill(key);
+		}
+
 		using var aes = new AesGcm(key, 16);
 
 		var nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
