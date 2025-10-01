@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 class Decrypt
 {
-	public static string ExtractArchive(string fileName)
+	public static void ExtractArchive(string fileName)
 	{
 		if (fileName.Contains(".zip") || fileName.Contains(".tar")) {
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -22,7 +22,6 @@ class Decrypt
 				fileName = fileName.Replace(".tar", "");
 			}
 		}
-		return fileName;
 	}
 
 	public static string DecryptKey(string fileName)
