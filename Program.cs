@@ -19,22 +19,6 @@ if (args.Length != 2) {
 string operand = args[0];
 string fileName = args[1];
 
-static string CheckIfDir(string fileName)
-{
-	if (File.Exists(fileName)) {
-		return fileName;
-	} else if (Directory.Exists(fileName)) {
-		fileName = Encrypt.CreateArchive(fileName);
-		return fileName;
-	} else {
-		Console.WriteLine("Error: Invalid file / directory");
-		Environment.Exit(1);
-		return fileName;
-	}
-}
-
-fileName = CheckIfDir(fileName);
-
 switch(operand)
 {
 	case "-e":

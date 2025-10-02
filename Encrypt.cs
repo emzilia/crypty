@@ -8,25 +8,32 @@ using System.Runtime.InteropServices;
 
 class Encrypt
 {
-	public static string CreateArchive(string fileName)
+	private static string CreateArchiveIfDir(string fileName)
 	{
-		if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-			ZipFile.CreateFromDirectory(fileName, fileName + ".zip");
-			fileName = fileName + ".zip";
+		if (File.Exists(fileName)) {
+			return fileName;
+		} else if (Directory.Exists(fileName)) {
+				if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+					ZipFile.CreateFromDirectory(fileName, fileName + ".zip");
+					fileName = fileName + ".zip";
+				} else {
+					TarFile.CreateFromDirectory(fileName, fileName + ".tar", false);
+					fileName = fileName + ".tar";
+				}
+				return fileName;
 		} else {
-			TarFile.CreateFromDirectory(fileName, fileName + ".tar", false);
-			fileName = fileName + ".tar";
+			Console.WriteLine("Error: Invalid file / Directory");
+			Environment.Exit(1);
+			return fileName;
 		}
-		return fileName;
 	}
 
 	public static void EncryptKey(string fileName)
 	{
 		string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");
-		string plaintextPath = fileName;
-		string ciphertextPath = fileName + ".enc";
-
-		var key = new byte[32];
+		string plaintextPath = CreateArchiveIfDir(fileName);
+		string ciphertextPath = plaintextPath + ".enc";
+		byte[] key = new byte[32];
 
 		if (File.Exists(keyPath)) {
 			key = File.ReadAllBytes(keyPath);
@@ -59,6 +66,7 @@ class Encrypt
 				if (File.Exists(plaintextPath)) File.Delete(plaintextPath);
 			}
 		}
+
 		Environment.Exit(0);
 	}
 }
