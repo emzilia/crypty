@@ -1,10 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System;
-using System.Text;
-using System.Formats.Tar;
-using System.IO.Compression;
-using System.Security.Cryptography;
-using System.Runtime.InteropServices;
+﻿using System.Security.Cryptography;
 
 class Hash
 {
