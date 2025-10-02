@@ -22,7 +22,7 @@ class Encrypt
 				}
 				return fileName;
 		} else {
-			Console.WriteLine("Error: Invalid file / Directory");
+			Console.Error.WriteLine("Error: Invalid file / Directory");
 			Environment.Exit(1);
 			return fileName;
 		}

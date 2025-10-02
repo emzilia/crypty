@@ -36,7 +36,7 @@ class Decrypt
 			string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");
 			key = File.ReadAllBytes(keyPath);
 		} catch {
-			Console.WriteLine("Error: Ensure the key is located in the same directory");
+			Console.Error.WriteLine("Error: No key found - ensure the key is located in the same directory");
 			Environment.Exit(1);
 		}
 
