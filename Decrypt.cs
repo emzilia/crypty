@@ -23,7 +23,7 @@ class Decrypt
 		}
 	}
 
-	public static string DecryptKey(string fileName)
+	public static void DecryptKey(string fileName)
 	{
 		string decryptPath = Path.Combine(Directory.GetCurrentDirectory(), fileName.Replace(".enc", ".dec"));
 
@@ -61,6 +61,6 @@ class Decrypt
 		}
 		fileName = fileName.Replace (".enc", ".dec");
 
-		return fileName;
+		ExtractArchive(fileName);
 	}
 }

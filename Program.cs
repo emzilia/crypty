@@ -43,8 +43,7 @@ switch(operand)
 		break;
 	case "-d":
 	case "--decrypt":
-		fileName = Decrypt.DecryptKey(fileName);
-		Decrypt.ExtractArchive(fileName);
+		Decrypt.DecryptKey(fileName);
 		break;
 	default:
 		Console.WriteLine(help);
