@@ -1,15 +1,29 @@
 ﻿// See https://aka.ms/new-console-template for more information
-//using System;
-//using System.Text;
-//using System.Security.Cryptography;
+using System.Security.Cryptography;
 
 string help = 
 @"Usage: crypty [operand] [filename]
-Encrypts single files with AES-GCM encryption using a keyfile.
+Encrypts files with AES-GCM encryption using a keyfile.
 Directories are archived with zip or tar before encryption.
 	Operands:
 		-e, --encrypt	encrypts filename to filename.enc
-		-d, --decrypt	decrypts filename to filename.dec";
+		-d, --decrypt	decrypts filename to filename.dec
+		-h, --hash		provides the SHA3-256 hash of a file";
+
+void CheckSupport(string operand)
+{
+	if (!AesGcm.IsSupported) {
+		Console.Error.WriteLine("Error: AES-GCM isn't supported on this platform");
+		Environment.Exit(1);
+	}
+
+	if (operand == "-h" || operand == "--hash") {
+		if (!SHA3_256.IsSupported) {
+			Console.Error.WriteLine("Error: SHA3-256 isn't supported on this platform");
+			Environment.Exit(1);
+		}
+	}
+}
 
 if (args.Length != 2) {
 	Console.WriteLine(help);
@@ -18,6 +32,8 @@ if (args.Length != 2) {
 
 string operand = args[0];
 string fileName = args[1];
+
+CheckSupport(operand);
 
 switch(operand)
 {
