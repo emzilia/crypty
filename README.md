@@ -3,10 +3,10 @@ Encrypt files on the command line using AES-GCM. Automatically creates zip/tar a
 
 ### to use
 ```
-Usage: crypty [option] [filename]
-Encrypts files with AES-128 encryption.
+Usage: crypty [operand] [filename]
+Encrypts files with AES-GCM encryption with a keyfile.
 Directories are archived with zip or tar before encryption.
-    Mandatory arguments:
+    Operands:
         -e,  --encrypt        encrypts filename to filename.enc
         -d,  --decrypt        decrypts filename to filename.dec
         -h,  --hash           provides the SHA3-256 hash of a file
