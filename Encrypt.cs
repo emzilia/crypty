@@ -41,15 +41,14 @@ class Encrypt
 
 		using var aes = new AesGcm(key, 16);
 
-		var nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
+		byte[] nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
 		RandomNumberGenerator.Fill(nonce);
 
-		var plaintext = File.ReadAllText(plaintextPath);
-		var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+		byte[] plaintextBytes = File.ReadAllBytes(plaintextPath);
 
-		var ciphertext = new byte[plaintextBytes.Length];
+		byte[] ciphertext = new byte[plaintextBytes.Length];
 
-		var tag = new byte[AesGcm.TagByteSizes.MaxSize];
+		byte[] tag = new byte[AesGcm.TagByteSizes.MaxSize];
 
 		File.WriteAllBytes(keyPath, key);
 
