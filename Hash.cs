@@ -18,14 +18,13 @@ class Hash
 			Environment.Exit(1);
 		}
 
-		var plaintext = File.ReadAllText(fileName);
-		byte[] plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+		var plaintextBytes = File.ReadAllBytes(fileName);
 
 		using var sha3 = SHA3_256.Create();	
 		
 		hash = sha3.ComputeHash(plaintextBytes);
 
-		Console.WriteLine(Convert.ToBase64String(hash));
+		Console.WriteLine(Convert.ToHexString(hash).ToLower());
 
 		Environment.Exit(0);
 	}
