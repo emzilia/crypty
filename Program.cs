@@ -45,6 +45,10 @@ switch(operand)
 	case "--decrypt":
 		Decrypt.DecryptKey(fileName);
 		break;
+	case "-h":
+	case "--hash":
+		Hash.HashFile(fileName);
+		break;
 	default:
 		Console.WriteLine(help);
 		break;
