@@ -53,9 +53,7 @@ class Decrypt
 
 			aes.Decrypt(nonce, cipher, tag, plaintextBytes);
 
-			string plaintext = Encoding.UTF8.GetString(plaintextBytes);
-
-			File.WriteAllText(decryptPath, plaintext);
+			File.WriteAllBytes(decryptPath, plaintextBytes);
 		}
 
 		fileName = fileName.Replace (".enc", ".dec");
