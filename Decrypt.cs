@@ -1,4 +1,4 @@
-﻿//using System.Text;
+﻿using System.Text;
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -57,6 +57,7 @@ class Decrypt
 
 			File.WriteAllText(decryptPath, plaintext);
 		}
+
 		fileName = fileName.Replace (".enc", ".dec");
 
 		ExtractArchive(fileName);
