@@ -35,21 +35,32 @@ string fileName = args[1];
 
 CheckSupport(operand);
 
-switch(operand)
-{
-	case "-e":
-	case "--encrypt":
-		Encrypt.EncryptKey(fileName);
-		break;
-	case "-d":
-	case "--decrypt":
-		Decrypt.DecryptKey(fileName);
-		break;
-	case "-h":
-	case "--hash":
-		Hash.HashFile(fileName);
-		break;
-	default:
-		Console.WriteLine(help);
-		break;
+try {
+	switch(operand)
+	{
+		case "-e":
+		case "--encrypt":
+			Encrypt.EncryptKey(fileName);
+			break;
+		case "-d":
+		case "--decrypt":
+			Decrypt.DecryptKey(fileName);
+			break;
+		case "-h":
+		case "--hash":
+			Hash.HashFile(fileName);
+			break;
+		default:
+			Console.WriteLine(help);
+			break;
+	}
+} catch (AuthenticationTagMismatchException) {
+	Console.Error.WriteLine("Error: Authentication tag mismatch - possible file corruption or incorrect key / file");
+	Environment.Exit(1);
+} catch (CryptographicException) {
+	Console.Error.WriteLine("Error: Encryption failed)");
+	Environment.Exit(1);
+} catch (UnauthorizedAccessException) {
+	Console.Error.WriteLine("Error: Insufficient permissions for selected file or current directory key path");
+	Environment.Exit(1);
 }
