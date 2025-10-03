@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 
 class Decrypt
 {
+	const int MaxTagAndNonceSize = 28;
+
 	public static void ExtractArchive(string fileName)
 	{
 		if (fileName.Contains(".zip") || fileName.Contains(".tar")) {
@@ -44,18 +46,18 @@ class Decrypt
 			Environment.Exit(1);
 		}
 
-		byte[] nonce = new byte[12];
-		Array.Copy(ciphertext, 0, nonce, 0, 12);
+		byte[] nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
+		Array.Copy(ciphertext, 0, nonce, 0, AesGcm.NonceByteSizes.MaxSize);
 
-		byte[] tag = new byte[16];
-		Array.Copy(ciphertext, ciphertext.Length - 16, tag, 0, 16);
+		byte[] tag = new byte[AesGcm.TagByteSizes.MaxSize];
+		Array.Copy(ciphertext, ciphertext.Length - AesGcm.TagByteSizes.MaxSize, tag, 0, AesGcm.TagByteSizes.MaxSize);
 
-		byte[] cipher = new byte[ciphertext.Length - 28];
-		Array.Copy(ciphertext, 12, cipher, 0, cipher.Length);
+		byte[] cipher = new byte[ciphertext.Length - MaxTagAndNonceSize];
+		Array.Copy(ciphertext, AesGcm.NonceByteSizes.MaxSize, cipher, 0, cipher.Length);
 
-		using (var aes = new AesGcm(key, 16))
+		using var aes = new AesGcm(key, AesGcm.TagByteSizes.MaxSize);
 
-		byte[] plaintextBytes = new byte[ciphertext.Length - 28];
+		byte[] plaintextBytes = new byte[ciphertext.Length - MaxTagAndNonceSize];
 
 		aes.Decrypt(nonce, cipher, tag, plaintextBytes);
 
