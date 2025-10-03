@@ -26,6 +26,12 @@ class Decrypt
 		string decryptPath = Path.Combine(Directory.GetCurrentDirectory(), fileName.Replace(".enc", ".dec"));
 
 		string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+
+		if (!File.Exists(filePath)) {
+			Console.Error.WriteLine("Error: Unable to load file for decryption");
+			Environment.Exit(1);
+		}
+
 		byte[] ciphertext = File.ReadAllBytes(filePath);
 
 		byte[] key = new byte[32];
@@ -48,13 +54,12 @@ class Decrypt
 		Array.Copy(ciphertext, 12, cipher, 0, cipher.Length);
 
 		using (var aes = new AesGcm(key, 16))
-		{
-			byte[] plaintextBytes = new byte[ciphertext.Length - 28];
 
-			aes.Decrypt(nonce, cipher, tag, plaintextBytes);
+		byte[] plaintextBytes = new byte[ciphertext.Length - 28];
 
-			File.WriteAllBytes(decryptPath, plaintextBytes);
-		}
+		aes.Decrypt(nonce, cipher, tag, plaintextBytes);
+
+		File.WriteAllBytes(decryptPath, plaintextBytes);
 
 		fileName = fileName.Replace (".enc", ".dec");
 
