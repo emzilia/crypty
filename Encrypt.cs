@@ -39,7 +39,7 @@ class Encrypt
 			RandomNumberGenerator.Fill(key);
 		}
 
-		using var aes = new AesGcm(key, 16);
+		using var aes = new AesGcm(key, AesGcm.TagByteSizes.MaxSize);
 
 		byte[] nonce = new byte[AesGcm.NonceByteSizes.MaxSize];
 		RandomNumberGenerator.Fill(nonce);
