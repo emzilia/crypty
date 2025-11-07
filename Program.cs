@@ -38,13 +38,21 @@ CheckSupport(operand);
 try {
 	switch(operand)
 	{
+		case "-ek":
+		case "--encrypt-key":
+			Encrypt.EncryptKey(fileName);
+			break;
 		case "-e":
 		case "--encrypt":
-			Encrypt.EncryptKey(fileName);
+			Encrypt.EncryptPass(fileName);
+			break;
+		case "-dk":
+		case "--decrypt-key":
+			Decrypt.DecryptKey(fileName);
 			break;
 		case "-d":
 		case "--decrypt":
-			Decrypt.DecryptKey(fileName);
+			Decrypt.DecryptPass(fileName);
 			break;
 		case "-h":
 		case "--hash":
