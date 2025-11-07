@@ -3,12 +3,14 @@ using System.Security.Cryptography;
 
 string help = 
 @"Usage: crypty [operand] [filename]
-Encrypts files with AES-GCM encryption using a keyfile.
+Encrypts files with AES-GCM encryption using a password or keyfile
 Directories are archived with zip or tar before encryption.
   Operands:
-    -e, --encrypt   encrypts filename to filename.enc
-    -d, --decrypt   decrypts filename to filename.dec
-    -h, --hash      provides the SHA3-256 hash of a file";
+    -e,  --encrypt        encrypts filename to filename.enc with a password
+    -d,  --decrypt        decrypts filename to filename.dec with a password
+    -ek, --encrypt-key    encrypts filename to filename.enc with a keyfile
+    -dk, --decrypt-key    decrypts filename to filename.dec with a keyfile
+    -h,  --hash           provides the SHA3-256 hash of a file";
 
 void CheckSupport(string operand)
 {
