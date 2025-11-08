@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Security;
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -6,6 +7,9 @@ using System.Runtime.InteropServices;
 
 class Encrypt
 {
+	const int keySize = 32;
+	const int saltSize = 16; 
+
 	private static string CreateArchiveIfDir(string fileName)
 	{
 		if (File.Exists(fileName)) {
@@ -31,7 +35,7 @@ class Encrypt
 		string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");
 		string plaintextPath = CreateArchiveIfDir(fileName);
 		string ciphertextPath = plaintextPath + ".enc";
-		byte[] key = new byte[32];
+		byte[] key = new byte[keySize];
 
 		if (File.Exists(keyPath)) {
 			key = File.ReadAllBytes(keyPath);
@@ -69,19 +73,30 @@ class Encrypt
 
 	private static (byte[], byte[]) CreatePbkdf2Key()
 	{
-		Console.WriteLine("Enter file password: ");
+		string pwd = "";
+		ConsoleKeyInfo enteredKey;
 
-		string pwdString = Console.ReadLine();
+		Console.Write("Enter file password: ");
+		while ((enteredKey = Console.ReadKey(true)).Key != ConsoleKey.Enter) {
+			if (enteredKey.Key == ConsoleKey.Backspace && pwd.Length > 0) {
+				pwd = pwd.Remove(pwd.Length - 1);
+				Console.Write("\b \b");
+			} else if (enteredKey.Key != ConsoleKey.Backspace) {
+				pwd += enteredKey.KeyChar;
+				Console.Write("*");
+			}
+		}
+		Console.WriteLine();
 
-		int saltSize = 16; 
+		byte[] pwdBytes = Encoding.Unicode.GetBytes(pwd);
 
-		byte[] pwd = Encoding.Unicode.GetBytes(pwdString);
-		
+		pwd = pwd.Remove(0);
+
 		byte[] salt = new byte[saltSize];
 		using RandomNumberGenerator rng = RandomNumberGenerator.Create();
 		rng.GetBytes(salt);
 
-		byte[] key = Rfc2898DeriveBytes.Pbkdf2(pwd, salt, 100000, HashAlgorithmName.SHA256, 32);
+		byte[] key = Rfc2898DeriveBytes.Pbkdf2(pwdBytes, salt, 100000, HashAlgorithmName.SHA256, keySize);
 
 		return (key, salt);
 	}

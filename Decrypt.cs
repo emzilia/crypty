@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Security;
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -7,6 +8,8 @@ using System.Runtime.InteropServices;
 class Decrypt
 {
 	const int MaxTagAndNonceSize = 28;
+	const int keySize = 32;
+	const int saltSize = 16;
 
 	public static void ExtractArchive(string fileName)
 	{
@@ -36,7 +39,7 @@ class Decrypt
 
 		byte[] ciphertext = File.ReadAllBytes(filePath);
 
-		byte[] key = new byte[32];
+		byte[] key = new byte[keySize];
 
 		try {
 			string keyPath = Path.Combine(Directory.GetCurrentDirectory(), "key");
@@ -70,22 +73,26 @@ class Decrypt
 
 	private static (byte[], byte[]) CreatePbkdf2Key(byte[] salt)
 	{
-		Console.WriteLine("Enter file password: ");
+		string pwd = "";
+		ConsoleKeyInfo enteredKey;
 
-		string pwdString = Console.ReadLine();
-
-		int saltSize = 16; 
-
-		byte[] pwd = Encoding.Unicode.GetBytes(pwdString);
-		
-		if (salt.Length == 0)
-		{
-			salt = new byte[saltSize];
-			using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-			rng.GetBytes(salt);
+		Console.Write("Enter file password: ");
+		while ((enteredKey = Console.ReadKey(true)).Key != ConsoleKey.Enter) {
+			if (enteredKey.Key == ConsoleKey.Backspace && pwd.Length > 0) {
+				pwd = pwd.Remove(pwd.Length - 1);
+				Console.Write("\b \b");
+			} else {
+				pwd += enteredKey.KeyChar;
+				Console.Write("*");
+			}
 		}
+		Console.WriteLine();
 
-		byte[] key = Rfc2898DeriveBytes.Pbkdf2(pwd, salt, 100000, HashAlgorithmName.SHA256, 32);
+		byte[] pwdBytes = Encoding.Unicode.GetBytes(pwd);
+
+		pwd = pwd.Remove(0);
+
+		byte[] key = Rfc2898DeriveBytes.Pbkdf2(pwdBytes, salt, 100000, HashAlgorithmName.SHA256, keySize);
 
 		return (key, salt);
 	}
@@ -93,9 +100,6 @@ class Decrypt
 
 	public static void DecryptPass(string fileName)
 	{
-		int keySize = 32;
-		int saltSize = 16;
-
 		string decryptPath = Path.Combine(Directory.GetCurrentDirectory(), fileName.Replace(".enc", ".dec"));
 
 		string filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
