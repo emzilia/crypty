@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Security;
 using System.Formats.Tar;
 using System.IO.Compression;
 using System.Security.Cryptography;
@@ -96,7 +95,7 @@ class Encrypt
 		using RandomNumberGenerator rng = RandomNumberGenerator.Create();
 		rng.GetBytes(salt);
 
-		byte[] key = Rfc2898DeriveBytes.Pbkdf2(pwdBytes, salt, 100000, HashAlgorithmName.SHA256, keySize);
+		byte[] key = Rfc2898DeriveBytes.Pbkdf2(pwdBytes, salt, 100000, HashAlgorithmName.SHA3_256, keySize);
 
 		return (key, salt);
 	}
